@@ -14,7 +14,7 @@ License for the specific language governing permissions and limitations under
 the License.
 ========================================================================================================
 
-User Interface: TBD
+User Interface: TBD (probably Qt or GTK+)
 
 Core Language: Python
 
@@ -23,3 +23,13 @@ Google Drive APIs: https://developers.google.com/api-client-library/python/apis/
 Documentation: https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/
 
 Useful Resources: https://developers.google.com/api-client-library/python/start/get_started
+
+It will:
+    create a working directory (~/GoogleDrive)
+    download all the files and directory in the user's Drive storage
+    update the files if they are modified locally
+    update the files when they are modified on the cloud
+    load new files into the cloud
+
+Version 0.1 
+    WIP
