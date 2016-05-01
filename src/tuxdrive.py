@@ -38,13 +38,37 @@ def get_credentials():                                                      #fun
         print('Storing credentials to ' + credential_path)
     return credentials                                                      #return the credential object
     
-def main():                                                                 #program entry point
+def download_files():
     credentials = get_credentials()                                         #create a new credential object
     http = credentials.authorize(httplib2.Http())                           #request an Http object based on the credentials
     service = discovery.build('drive', 'v3', http=http)                     #create a new Drive service object. Collections and methods calls will be done on this object. Don't forget to call the execute() method at some point, or 
                                                                             #the API call will not be made
     results = service.files().list(                         
-        pageSize=10, fields="nextPageToken, files(id, name)").execute()     #calls the list method on the files collection, execute() to make the request
+        pageSize=None, fields="nextPageToken, files(id, name)").execute()     #calls the list method on the files collection, execute() to make the request
+    items = results.get('files', [])                                        #create the array containing the result of the listing
+    
+    if not items:                                                           #just in case they forgot to actually use their Google Drive space, you know
+        print('No file found')
+    else:
+        for item in items:
+            file_id = item['id']
+            request = service.files().get(fileId=file_id)
+            fh = io.BytesIO()
+            downloader = MediaIoBaseDownload(fh, request)
+            done = False
+            
+            while done is False:
+                status, done = downloader.next_chungk()
+                print("Download %d%%" % int(status.progress() * 100))
+                
+    
+def main():                                                                 #program entry point
+    """credentials = get_credentials()                                         #create a new credential object
+    http = credentials.authorize(httplib2.Http())                           #request an Http object based on the credentials
+    service = discovery.build('drive', 'v3', http=http)                     #create a new Drive service object. Collections and methods calls will be done on this object. Don't forget to call the execute() method at some point, or 
+                                                                            #the API call will not be made
+    results = service.files().list(                         
+        pageSize=None, fields="nextPageToken, files(id, name)").execute()     #calls the list method on the files collection, execute() to make the request
     items = results.get('files', [])                                        #create the array containing the result of the listing
     
     if not items:                                                           #just in case they forgot to actually use their Google Drive space, you know
@@ -53,6 +77,10 @@ def main():                                                                 #pro
         print('Files: ')
         for item in items:
             print('{0} ({1})'.format(item['name'], item['id']))
+       """
+       
+    download_files()
             
 if __name__ == '__main__':                                                   
     main()
+    
