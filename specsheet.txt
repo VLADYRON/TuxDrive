@@ -16,10 +16,10 @@ the License.
 
 User Interface: TBD
 
-Core Language: Java
+Core Language: Python
 
-Google Drive APIs: 
+Google Drive APIs: https://developers.google.com/api-client-library/python/apis/drive/v3
 
-Documentation: 
+Documentation: https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/
 
-Useful Resources: 
+Useful Resources: https://developers.google.com/api-client-library/python/start/get_started
