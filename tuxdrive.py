@@ -22,19 +22,22 @@ gauth.LocalWebserverAuth()
 drive = GoogleDrive(gauth)
 
 cont = 0
-file_list = drive.ListFile({'q': "'root' in parents and trashed = false"}).GetList()
-for file1 in file_list:
-    if re.match("^application/vnd.", file1['mimeType']):
-        continue
-    if re.match("^image/png", file1['mimeType']):
-        cont += 1
-        file_id = file1['id']
-        file_name = file1['title']
-        #print(file_id)
-        downloaded_file = drive.CreateFile({'id': file_id})
-        downloaded_file.GetContentFile(drive_dir + "/" + file_name)
-        #print("File Name:", file1['title'])
-        #print("MimeType:", file1['mimeType'])
-        #print()
+
     
 print("File downloaded:", cont)    
+
+def DownloadAllFiles():
+    file_list = drive.ListFile({'q': "'root' in parents and trashed = false"}).GetList()
+    for file1 in file_list:
+        if re.match("^application/vnd.", file1['mimeType']):
+            continue
+        if re.match("^image/png", file1['mimeType']):
+            cont += 1
+            file_id = file1['id']
+            file_name = file1['title']
+            downloaded_file = drive.CreateFile({'id': file_id})
+            downloaded_file.GetContentFile(drive_dir + "/" + file_name)
+            print("File Name:", file1['title'])
+            print("MimeType:", file1['mimeType'])
+            print()
+            

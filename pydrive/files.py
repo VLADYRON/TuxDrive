@@ -1,6 +1,7 @@
 import io
 import mimetypes
 
+from apiclient import discovery
 from apiclient import errors
 from apiclient.http import MediaIoBaseUpload
 from functools import wraps
@@ -189,20 +190,25 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
 
   @LoadMetadata
   def FetchContent(self, mimetype=None):
-    """Download file's content from download_url.
+    """Download file's content based on file's ID.
 
     :raises: ApiRequestError, FileNotUploadedError, FileNotDownloadableError
     """
-    download_url = self.metadata.get('downloadUrl')
-    if download_url:
-      self.content = io.BytesIO(self._DownloadFromUrl(download_url))
-      self.dirty['content'] = False
-      return
-    
-    export_links = self.metadata.get('exportLinks')
+    file_id = self.metadata.get('id')
+    if file_id:
+        request = self.files().get_media(fileId=file_id)
+        fh = io.BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            print("Download %d%%." % int(status.progress() * 100))
+        return
+        
+    export_links = self.metadata.get('id')
     if export_links and export_links.get(mimetype):
       self.content = io.BytesIO(
-          self._DownloadFromUrl(export_links.get(mimetype)))
+          self._DownloadFromId(export_links.get(mimetype)))
       self.dirty['content'] = False
       return
 
@@ -313,4 +319,18 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
     resp, content = self.auth.service._http.request(url)
     if resp.status != 200:
       raise ApiRequestError('Cannot download file: %s' % resp)
+    return content
+
+  @LoadAuth
+  def _DownloadFromId(self, id):
+    """Download file based on id using provided credential.
+    
+    :param id: the id of the file to download
+    :type id: str.
+    :returns: str -- content of downloaded file in string.
+    :raises: ApiRequestError
+    """
+    resp, content = self.auth.service._http.request(id)
+    if resp.status != 200:
+        raise ApiRequestError('Cannot download file: %s' % resp)
     return content
