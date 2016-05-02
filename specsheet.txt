@@ -18,11 +18,21 @@ User Interface: TBD (probably Qt or GTK+)
 
 Core Language: Python
 
-Google Drive APIs: https://developers.google.com/api-client-library/python/apis/drive/v3
+Google APIs:
 
-Documentation: https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/
+    Google Drive APIs: https://developers.google.com/api-client-library/python/apis/drive/v3
 
-Useful Resources: https://developers.google.com/api-client-library/python/start/get_started
+    Documentation: https://developers.google.com/resources/api-libraries/documentation/drive/v3/python/latest/
+
+    Useful Resources: https://developers.google.com/api-client-library/python/start/get_started
+    
+TuxDrive uses PyDrive wrapper for accessing the Google APIs 
+    
+    PyDrive: https://github.com/googledrive/PyDrive
+    
+    Documentation: http://pythonhosted.org/PyDrive
+    
+    Mainpage:  https://pypi.python.org/pypi/PyDrive
 
 It will:
     create a working directory (~/GoogleDrive)
@@ -33,3 +43,9 @@ It will:
 
 Version 0.1 
     WIP
+
+Dependencies:
+	httplib2 for python2
+	oauth2client for python2
+	google-api-python-client for python2
+	yaml for python2
