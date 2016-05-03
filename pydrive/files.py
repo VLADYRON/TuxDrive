@@ -171,6 +171,34 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
     f.close()
 
   @LoadAuth
+  def GD_download_file(self, file_id, path):
+    print('Started download process')
+    drive_file = self.auth.service.files().get(fileId=file_id).execute()
+    download_url = drive_file.get('downloadUrl')
+    if drive_file.get('fileSize'):
+      total_size = int(drive_file.get('fileSize'))
+    else:
+      return
+    s = self._partial(total_size, 500000000) #TODO make the chunk size settable by the user
+    title = drive_file.get('title')
+    originalFilename = drive_file.get('originalFilename')
+    filename = path + '/' + title
+    if download_url:
+        with open(filename, 'wb') as file:
+          for bytes in s:
+            headers = {"Range" : 'bytes=%s-%s' % (bytes[0], bytes[1])}
+            resp, content = self.auth.service._http.request(download_url, headers=headers)
+            if resp.status == 206 :
+                  file.write(content)
+                  file.flush()
+            else:
+              print 'An error occurred: %s' % resp
+              return None
+        return title, filename
+    else:
+      return None
+      
+  @LoadAuth
   def FetchMetadata(self):
     """Download file's metadata from id using Files.get().
 
@@ -321,16 +349,11 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
       raise ApiRequestError('Cannot download file: %s' % resp)
     return content
 
-  @LoadAuth
-  def _DownloadFromId(self, id):
-    """Download file based on id using provided credential.
-    
-    :param id: the id of the file to download
-    :type id: str.
-    :returns: str -- content of downloaded file in string.
-    :raises: ApiRequestError
-    """
-    resp, content = self.auth.service._http.request(id)
-    if resp.status != 200:
-        raise ApiRequestError('Cannot download file: %s' % resp)
-    return content
+  def _partial(self, total_byte_len, part_size_limit):
+    s = []
+    for p in range(0, total_byte_len, part_size_limit):
+        last = min(total_byte_len - 1, p + part_size_limit - 1)
+        s.append([p, last])
+    return s
+
+  
