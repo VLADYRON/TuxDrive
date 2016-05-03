@@ -171,14 +171,22 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
     f.close()
 
   @LoadAuth
-  def GD_download_file(self, file_id, path):
-    print('Started download process')
+  def ChunkedDownloadFile(self, file_id, path):
+    """Save content of this file as a local file, downloading it by chunks
+       of 500 MB each.
+       
+    :param file_id: id of the file to download
+    :type file_id: str.
+    """
     drive_file = self.auth.service.files().get(fileId=file_id).execute()
+    print("Started download process:", drive_file['title'])
     download_url = drive_file.get('downloadUrl')
     if drive_file.get('fileSize'):
       total_size = int(drive_file.get('fileSize'))
     else:
       return
+    
+    if drive_file.get('title') > 
     s = self._partial(total_size, 500000000) #TODO make the chunk size settable by the user
     title = drive_file.get('title')
     originalFilename = drive_file.get('originalFilename')

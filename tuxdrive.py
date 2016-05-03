@@ -30,14 +30,16 @@ def DownloadAllFiles():
     cont = 0
     file_list = drive.ListFile({'q': "'root' in parents and trashed = false"}).GetList()
     for file1 in file_list:
-        if re.match("^application/vnd.", file1['mimeType']) and re.match("^application/zip", file1['mimeType']):
+        if re.match("^application/vnd.", file1['mimeType']):
+            continue    
+        if re.match("^application/zip", file1['mimeType']):
             continue
         else:
             cont += 1
             file_id = file1['id']
             file_name = file1['title']
             downloaded_file = drive.CreateFile({'id': file_id})
-            downloaded_file.GD_download_file(file_id, drive_dir)
+            downloaded_file.ChunkedDownloadFile(file_id, drive_dir)
             print("File Name:", file1['title'])
             print("MimeType:", file1['mimeType'])
             print()
