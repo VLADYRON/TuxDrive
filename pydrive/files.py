@@ -186,7 +186,6 @@ class GoogleDriveFile(ApiAttributeMixin, ApiResource):
     else:
       return
     
-    if drive_file.get('title') > 
     s = self._partial(total_size, 500000000) #TODO make the chunk size settable by the user
     title = drive_file.get('title')
     originalFilename = drive_file.get('originalFilename')
