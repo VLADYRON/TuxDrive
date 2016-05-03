@@ -32,8 +32,6 @@ def DownloadAllFiles():
     for file1 in file_list:
         if re.match("^application/vnd.", file1['mimeType']):
             continue    
-        if re.match("^application/zip", file1['mimeType']):
-            continue
         else:
             cont += 1
             file_id = file1['id']
