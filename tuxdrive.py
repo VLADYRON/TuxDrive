@@ -36,7 +36,7 @@ def ListRemoteFiles():
 def ListLocalFiles():
     local_files = os.listdir(drive_dir)
     return local_files
-    
+
 def DownloadAllFiles():
     cont = 0
     file_list = ListRemoteFiles()
@@ -68,11 +68,11 @@ def UploadAllFiles(button):
         print("MimeType:", file1['mimeType'])
         print("File size:", file1['fileSize'])
         print()
-    print("File uploaded:", cont)    
+    print("File uploaded:", cont)
 
 #window.set_default_size(800, 600)
 upbutton.connect("clicked", UploadAllFiles)
 
 
-if __name__ == '__main__':                                                   
+if __name__ == '__main__':
     Gtk.main()   
