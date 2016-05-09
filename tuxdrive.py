@@ -6,13 +6,14 @@ from pydrive.drive import GoogleDrive
 from gi.repository import Gtk, GLib
 import os
 import re
+import threading
 
 builder = Gtk.Builder()
 builder.add_from_file("ui.xml")
 window = builder.get_object("win")
 window.show_all()
 window.connect("destroy", Gtk.main_quit)
-button = builder.get_object("uploadButton")
+upbutton = builder.get_object("uploadButton")
 
 #create GoogleDrive directory - OS AGNOSTIC
 drive_dir = os.getenv("HOME") + "/GoogleDrive"
@@ -22,22 +23,23 @@ try:
 except:
     pass
 
-#autenticate with OAuth 2
-gauth = GoogleAuth()
-gauth.LocalWebserverAuth()
-
-#list all files in the cloud storage
-drive = GoogleDrive(gauth)
-
 cont = 0
 
-def main():
-    
-    DownloadAllFiles() 
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+drive = GoogleDrive(gauth)
 
+def ListRemoteFiles():
+    file_list = drive.ListFile({'q': "'root' in parents and trashed = false"}).GetList()
+    return file_list
+
+def ListLocalFiles():
+    local_files = os.listdir(drive_dir)
+    return local_files
+    
 def DownloadAllFiles():
     cont = 0
-    file_list = ListFile()
+    file_list = ListRemoteFiles()
     for file1 in file_list:
         if re.match("^application/vnd.", file1['mimeType']):
             continue    
@@ -53,33 +55,24 @@ def DownloadAllFiles():
             print()
     print("File downloaded:", cont)
 
-def UploadAllFiles():
+def UploadAllFiles(button):
     cont = 0
-    file_list = ListFile()
+    file_list = ListLocalFiles()
     for file1 in file_list:
-        if re.match("^application/vnd.", file1['mimeType']):
-            continue
-        else:
-            cont +=1
-            file_id = file1['id']
-            file_name = file1['title']
-            uploaded_file = drive.CreateFile({'id': file_id})
-            uploaded_file.Upload()
-            print("File Name:", file1['title'])
-            print("MimeType:", file1['mimeType'])
-            print("File size:", file1['fileSize'])
-            print()
-    print("File uploaded:", cont)
-    
-def ListFiles():
-    file_list = drive.ListFile({'q': "'root' in parents and trashed = false"}).GetList().execute()
-    return file_list
-    
-    
+        cont +=1
+        file_id = file1['id']
+        file_name = file1['title']
+        uploaded_file = drive.CreateFile({'id': file_id})
+        uploaded_file.Upload()
+        print("File Name:", file1['title'])
+        print("MimeType:", file1['mimeType'])
+        print("File size:", file1['fileSize'])
+        print()
+    print("File uploaded:", cont)    
 
 #window.set_default_size(800, 600)
-button.connect("clicked", UploadAllFiles)
-Gtk.main()
+upbutton.connect("clicked", UploadAllFiles)
+
 
 if __name__ == '__main__':                                                   
-    main()   
+    Gtk.main()   

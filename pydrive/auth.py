@@ -194,7 +194,7 @@ class GoogleAuth(ApiAttributeMixin, object):
     """Authenticate and authorize from user by printing authentication url
     retrieving authentication code from command-line.
 
-    :returns: str -- code returned from commandline.
+    :returns: str -- code returned from commandline. 
     """
     self.flow.redirect_uri = OOB_CALLBACK_URN
     authorize_url = self.GetAuthUrl()
