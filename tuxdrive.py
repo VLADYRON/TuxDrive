@@ -49,6 +49,7 @@ def DownloadAllFiles():
             file_name = file1['title']
             downloaded_file = drive.CreateFile({'id': file_id})
             downloaded_file.ChunkedDownloadFile(file_id, drive_dir)
+            downloaded_file.FetchMetadata()
             print("File Name:", file1['title'])
             print("MimeType:", file1['mimeType'])
             print("File size:", file1['fileSize'])
@@ -59,16 +60,10 @@ def UploadAllFiles(button):
     cont = 0
     file_list = ListLocalFiles()
     for file1 in file_list:
-        cont +=1
-        file_id = file1['id']
-        file_name = file1['title']
-        uploaded_file = drive.CreateFile({'id': file_id})
+        file_name = file1
+        uploaded_file = drive.CreateFile({'name': file_name})
         uploaded_file.Upload()
-        print("File Name:", file1['title'])
-        print("MimeType:", file1['mimeType'])
-        print("File size:", file1['fileSize'])
-        print()
-    print("File uploaded:", cont)
+        print("Uploaded", file_name)
 
 #window.set_default_size(800, 600)
 upbutton.connect("clicked", UploadAllFiles)
